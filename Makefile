@@ -21,7 +21,7 @@ clean:
 build:
 	@cargo build --release --target=wasm32-wasi
 	@wasm-opt -O3 --strip-debug target/wasm32-wasi/release/$(PROJECT).wasm -o target/wasm32-wasi/release/$(PROJECT).wasm
-	@tar -czf target/wasm32-wasi/release/$(PROJECT).zip target/wasm32-wasi/release/$(PROJECT).wasm
+	@cd target/wasm32-wasi/release && tar -czf $(PROJECT).tar $(PROJECT).wasm
 
 test:
 	@wasmer run --dir data target/wasm32-wasi/release/$(PROJECT).wasm test-1.json
