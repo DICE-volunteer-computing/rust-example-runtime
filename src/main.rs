@@ -1,14 +1,12 @@
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
-use std::fs::File;
-use std::io::{BufReader, Write};
-use std::path::Path;
-use std::time::Duration;
-use std::{env, thread};
+use std::fs::{self, File};
+use std::io::{self, BufReader, Write};
+use std::path::PathBuf;
 
 #[derive(Deserialize)]
 struct InputData {
-    millis: u64,
+    input_id: u64,
 }
 
 #[derive(Serialize)]
@@ -16,24 +14,31 @@ struct OutputData {
     message: String,
 }
 
-fn main() {
-    // ------ read arguments ------
-    let args: Vec<String> = env::args().collect();
-    let input_filename = args[1].parse::<String>().unwrap();
+fn list_files_in_dir(root: &str) -> io::Result<Vec<PathBuf>> {
+    let mut result = vec![];
 
+    for path in fs::read_dir(root)? {
+        result.push(path?.path().to_owned());
+    }
+
+    Ok(result)
+}
+
+fn main() {
     // ------ load data from input file ------
-    let inputs_dir = Path::new("input");
-    let data_file = File::open(inputs_dir.join(input_filename)).unwrap();
+    let files = list_files_in_dir("input").expect("Could not get files");
+    let data_file = File::open(files.get(0).expect("No input files provided")).unwrap();
     let data_file_reader = BufReader::new(data_file);
     let input_data: InputData = serde_json::from_reader(data_file_reader).unwrap();
-
-    // ------ execute computation ------
-    thread::sleep(Duration::from_millis(input_data.millis));
 
     // ------ output ------
     let now: DateTime<Local> = Local::now();
     let output_data = OutputData {
-        message: format!("Completed the task at {}", now.format("%A, %B %e, %Y %r")),
+        message: format!(
+            "Completed task #{} at {}",
+            input_data.input_id,
+            now.format("%A, %B %e, %Y %r")
+        ),
     };
     let serialized_data = serde_json::to_string(&output_data).unwrap();
     let mut file = File::create("output/output.json").expect("Could not create output file");
