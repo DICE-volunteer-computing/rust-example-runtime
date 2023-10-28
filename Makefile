@@ -4,7 +4,7 @@ PROJECT := $(shell basename "$$PWD")
 
 all:
 	@echo ''
-	@echo "DICE Runtime Examples - Rust"
+	@echo "DICE Runtime Examples - Wasmer & Rust"
 	@echo "Vale Tolpegin (valetolpegin@gmail.com)"
 	@echo ''
 	@echo "-----------------------"
@@ -25,10 +25,10 @@ build:
 	@cd target/wasm32-wasi/release && tar -czf $(PROJECT).tar $(PROJECT).wasm
 
 test:
+	@mkdir -p data/output
 	@wasmer run --mapdir=input:data/input --mapdir=output:data/output target/wasm32-wasi/release/$(PROJECT).wasm
 
 inspect:
-	@echo ''
 	@echo 'Top'
 	@echo "-----------------------"
 	@echo ''
@@ -39,4 +39,3 @@ inspect:
 	@echo "-----------------------"
 	@echo ''
 	@twiggy garbage target/wasm32-wasi/release/$(PROJECT).wasm
-	@echo ''

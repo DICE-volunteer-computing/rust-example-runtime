@@ -2,15 +2,17 @@
 
 An example implemention of a DICE runtime utilizing the Rust programming language, demonstrating how to build and test an input artifact in Rust.
 
-## Setup
+## Dependencies
 
-Install:
+1. zsh
 
 1. wasm-opt (`brew install binaryen`)
 
 1. wasmer
 
-1. `cargo add twiggy`
+1. Rust
+
+1. Make
 
 ## Commands
 
